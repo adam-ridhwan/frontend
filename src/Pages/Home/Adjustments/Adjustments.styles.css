@@ -1,0 +1,18 @@
+.adjustments-container {
+  display: flex;
+}
+
+.adjustments-alignment {
+  margin: 3px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: 20px;
+}
+
+.adjustments-alignment p {
+  font-size: 0.6rem;
+  color: rgba(55, 53, 47, 0.65);
+}

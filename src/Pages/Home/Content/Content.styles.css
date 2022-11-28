@@ -1,0 +1,155 @@
+.global-content-container {
+  outline: 1px solid rgb(234, 234, 234);
+  border-radius: 5px;
+  margin: 10px 30px;
+  margin-top: 10px;
+}
+
+.global-content-container:hover {
+  transition: border 250ms ease-in-out;
+  outline: 1px solid darkgray;
+}
+
+.tasks-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px 0;
+  margin: 0 20px;
+  height: 30px;
+}
+
+.tasks-container span {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-icon {
+  cursor: pointer;
+}
+
+.div-tasks {
+  box-sizing: border-box;
+  font-size: 15px;
+  opacity: 0;
+  min-height: 20px;
+  min-width: 2ch;
+  max-width: 250px;
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-left: 5px;
+}
+
+.my-text-area {
+  z-index: 1;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  font-size: 15px;
+  white-space: pre;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 0 5px;
+  margin-left: 5px;
+  overflow: hidden;
+}
+
+.my-text-area-hovered {
+  z-index: 1;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  font-size: 15px;
+  white-space: pre;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 0 5px;
+  margin-left: 5px;
+  overflow: hidden;
+  border: none;
+  border-radius: 1pt;
+  box-shadow: 0 0 0 1pt rgb(122, 122, 122);
+}
+
+@media (min-width: 600px) {
+  .div-tasks {
+    max-width: 80vw;
+  }
+}
+
+.add-task-input-container {
+  /* padding: 20px; */
+  height: 40px;
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+  border-bottom: 1px solid rgb(234, 234, 234);
+}
+
+.add-task-input-container span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-task-input-container input {
+  color: #2c2d30;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  outline: none;
+  margin-left: 5px;
+  padding: 0 5px;
+}
+
+/* ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ */
+
+.greenBackground {
+  position: absolute;
+  height: 42px;
+  width: 100%;
+  top: -1px;
+  z-index: -10;
+  background: linear-gradient(0.25turn, white, rgb(113, 155, 152), white);
+  background-size: 150% 100%;
+  background-position: 60% 0;
+  background-repeat: no-repeat;
+  opacity: 0;
+  animation: greenBackground 1s cubic-bezier(0.42, 0, 0.57, 1.05);
+}
+
+@keyframes greenBackground {
+  0% {
+    background-position: 200% 0;
+    opacity: 1;
+  }
+
+  25% {
+    background-position: 60% 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.initialRenderOpacity {
+  transition: opacity 500ms;
+}

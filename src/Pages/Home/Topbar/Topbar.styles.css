@@ -1,0 +1,40 @@
+.topbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 40px;
+  gap: 10px;
+}
+
+.topbar p:first-child {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.topbar p:nth-child(2) {
+  font-weight: 400;
+  font-size: 30px;
+}
+
+.topbar div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background-color: #efefef;
+  width: 250px;
+  height: 40px;
+  border-radius: 60px;
+  color: #6d6e6f;
+}
+
+.topbar div > span:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar div > p:last-child {
+  font-size: 14px;
+}

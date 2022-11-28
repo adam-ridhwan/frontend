@@ -1,0 +1,82 @@
+.allTasks-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: relative;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+.allTasks-button {
+  color: rgba(55, 53, 47, 0.65);
+  border: none;
+  background: none;
+  cursor: pointer;
+  height: 30px;
+  padding: 0px 10px;
+}
+
+.allTasks-button:hover {
+  transition: background-color 20ms ease-in 0s;
+  cursor: pointer;
+  background: rgba(55, 53, 47, 0.08);
+  border-radius: 3px;
+}
+
+.allTasks-drpdwn-menu {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 170px;
+  pointer-events: none;
+  top: calc(100% + 1px);
+  right: 0px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
+  box-shadow: rgb(15 15 15 / 5%) 0px 0px 0px 1px,
+    rgb(15 15 15 / 10%) 0px 3px 6px, rgb(15 15 15 / 20%) 0px 9px 24px;
+  opacity: 0;
+  transform: translate3d(0, -10px, 0);
+  transition: opacity 150ms ease-in,
+    transform 150ms cubic-bezier(0.42, -0.02, 1, 1);
+}
+
+.allTasks-container.active > .allTasks-button + .allTasks-drpdwn-menu {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+}
+
+.allTasks-drpdwn-menu button {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 150px;
+}
+
+.allTasks-drpdwn-menu span {
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.allTasks-drpdwn-menu button:hover {
+  transition: background-color 150ms ease-in-out 0s;
+  cursor: pointer;
+  background: rgba(55, 53, 47, 0.08);
+  border-radius: 3px;
+}
+
+.allTasks-drpdwn-menu p {
+  margin: 5px;
+}
