@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import HandleErrors from '../HandleErrors/HandleErrors';
+import HandleErrors from '../Helper/HandleErrors';
 
 import './Register.styles.css';
 

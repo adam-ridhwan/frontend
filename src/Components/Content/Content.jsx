@@ -1,36 +1,19 @@
-import {
-  createRef,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { createRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'; // prettier-ignore
 import { v4 as uuidv4 } from 'uuid';
-
+import FetchTodos from '../../API/FetchTodos';
+import PostTodos from '../../API/PostTodos';
+import UpdateTodos from '../../API/UpdateTodos';
+import { ALLTASKS, ASCENDING, COMPLETEDTASKS, DESCENDING, INCOMPLETETASKS, REMOVESORT } from '../../Constants/Constants'; // prettier-ignore
 import { TodosContext } from '../../Context/TodosContext';
+
 import Adjustments from '../Adjustments/Adjustments';
-
 import './Content.styles.css';
-
-const ALLTASKS = 'All tasks';
-const COMPLETEDTASKS = 'Completed tasks';
-const INCOMPLETETASKS = 'Incomplete tasks';
-
-const ASCENDING = 'ASCENDING';
-const DESCENDING = 'DESCENDING';
-const REMOVESORT = 'REMOVESORT';
 
 const CLASSNAME = 'greenBackground';
 
 const Content = () => {
-  const credentials = JSON.parse(localStorage.getItem('userData'));
-  const EMAIL = credentials.email;
-  const PASSWORD = credentials.password;
-
-  const { todos, setTodos, filter, searchField, sortValue } =
-    useContext(TodosContext);
+  FetchTodos();
+  const { todos, setTodos, filter, sortValue,searchField } = useContext(TodosContext); // prettier-ignore
   const [todoText, setTodoText] = useState('');
 
   const [hoveredOnDivTask, setHoveredOnDivTask] = useState(null);
@@ -66,42 +49,9 @@ const Content = () => {
 
   const addTaskInputRef = useRef();
 
-  useEffect(() => {
-    fetch(`http://localhost:4000/todos`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${EMAIL}:${PASSWORD}`,
-      },
-    })
-      .then(response => response.json())
-      .then(todos => setTodos(todos));
-  }, [EMAIL, PASSWORD, setTodos]);
-
-  const addTodos = newTodos => {
-    fetch(`http://localhost:4000/todos`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${EMAIL}:${PASSWORD}`,
-      },
-      body: JSON.stringify(newTodos),
-    }).then(() => {});
-  };
-
-  const updateTodo = updateTodoObject => {
-    fetch(`http://localhost:4000/todos`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${EMAIL}:${PASSWORD}`,
-      },
-      body: JSON.stringify(updateTodoObject),
-    }).then(() => {});
-  };
-
-  const addTask = e => {
+  const AddNewTodo = (e, todoText) => {
     e.preventDefault();
+
     if (!todoText) return;
     const newTodo = {
       id: uuidv4(),
@@ -110,24 +60,25 @@ const Content = () => {
     };
     const newTodos = [...todos, newTodo];
     e.target.reset();
+
     setTodos(newTodos);
-    addTodos(newTodos);
+    PostTodos(newTodos);
   };
 
   const toggleCheckedTodo = (ref, todo) => {
-    const newTodoArray = [...todos];
+    const newTodos = [...todos];
     const selectedTodo = Object.values(todos).find(obj => obj.id === todo.id);
     const todoIndex = todos.indexOf(selectedTodo);
-    newTodoArray[todoIndex].finished = !newTodoArray[todoIndex].finished;
+    newTodos[todoIndex].finished = !newTodos[todoIndex].finished;
 
     if (todo.finished) ref.current.classList.add(CLASSNAME);
     if (!todo.finished) ref.current.classList.remove(CLASSNAME);
 
-    setTodos(newTodoArray);
-    addTodos(newTodoArray);
+    setTodos(newTodos);
+    PostTodos(newTodos);
   };
 
-  const memoized = useCallback(() => {
+  const deleteClassNameMemoized = useCallback(() => {
     for (const [, value] of Object.entries(greenBackgroundRefsById)) {
       if (value.current !== null) {
         value.current.classList.remove(CLASSNAME);
@@ -136,7 +87,7 @@ const Content = () => {
   }, [greenBackgroundRefsById]);
 
   useEffect(() => {
-    memoized();
+    deleteClassNameMemoized();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortValue, filter]);
 
@@ -167,6 +118,12 @@ const Content = () => {
       document.removeEventListener('click', editTextrea);
     };
   });
+
+  useEffect(() => {
+    setTimeout(() => {
+      setRender(false);
+    }, 1000);
+  }, [sortValue, filter]);
 
   const getTodos = () => {
     if (filter === ALLTASKS && sortValue === REMOVESORT) {
@@ -205,20 +162,11 @@ const Content = () => {
     );
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      setRender(false);
-    }, 1000);
-  }, [sortValue, filter]);
-
   // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
   return (
     <>
-      <div
-        style={{ opacity: render === true ? '0' : '1' }}
-        className={render !== true ? 'render' : 're-render'}
-      >
+      <div style={{ opacity: render === true ? '0' : '1' }} className='render'>
         <div className='global-content-container'>
           <Adjustments />
           <hr
@@ -304,8 +252,10 @@ const Content = () => {
                         }}
                         onBlur={() => {
                           if (updateTodoObject === null) return;
-                          setFocusedTextarea(null);
-                          updateTodo(updateTodoObject);
+                          UpdateTodos(updateTodoObject);
+                        }}
+                        onKeyPress={e => {
+                          if (e.key === 'Enter') e.preventDefault();
                         }}
                       ></textarea>
                     </label>
@@ -316,7 +266,7 @@ const Content = () => {
           })}
           <div className='add-task-input-container'>
             <span className=''>{addIcon}</span>
-            <form onSubmit={addTask}>
+            <form onSubmit={e => AddNewTodo(e, todoText)}>
               <input
                 ref={addTaskInputRef}
                 type='text'

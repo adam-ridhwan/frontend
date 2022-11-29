@@ -1,14 +1,12 @@
-import Adjustments from './Adjustments/Adjustments';
-import Content from './Content/Content';
-import GlobalTopBar from './GlobalTopbar/GlobalTopBar';
-import Topbar from './Topbar/Topbar';
+import Content from '../../Components/Content/Content';
+import GlobalTopBar from '../../Components/GlobalTopbar/GlobalTopBar';
+import Topbar from '../../Components/Topbar/Topbar';
 
 const Homepage = () => {
   return (
     <>
       <GlobalTopBar />
       <Topbar />
-
       <Content />
     </>
   );

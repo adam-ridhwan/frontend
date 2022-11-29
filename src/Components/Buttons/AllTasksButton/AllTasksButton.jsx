@@ -80,16 +80,6 @@ const AllTasksButton = () => {
         <div className='allTasks-drpdwn-menu'>
           <button
             onClick={() => {
-              setFilter(ALLTASKS);
-              setIsTasksDrpdwnOpen(false);
-            }}
-          >
-            <span>{clipboard}</span>
-            <p>All Tasks</p>
-          </button>
-
-          <button
-            onClick={() => {
               setFilter(COMPLETEDTASKS);
               setIsTasksDrpdwnOpen(false);
             }}
@@ -106,6 +96,16 @@ const AllTasksButton = () => {
           >
             <span>{uncheckedBox}</span>
             <p>Incomplete Tasks</p>
+          </button>
+
+          <button
+            onClick={() => {
+              setFilter(ALLTASKS);
+              setIsTasksDrpdwnOpen(false);
+            }}
+          >
+            <span>{clipboard}</span>
+            <p>All Tasks</p>
           </button>
         </div>
       </div>

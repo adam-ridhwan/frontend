@@ -1,8 +1,8 @@
+import AllTasksButton from '../Buttons/AllTasksButton/AllTasksButton';
+import DotsButton from '../Buttons/DotsButton/DotsButton';
+import SearchButton from '../Buttons/SearchButton/SearchButton';
+import SortButton from '../Buttons/SortButton/SortButton';
 import './Adjustments.styles.css';
-import AllTasksButton from './AllTasksButton/AllTasksButton';
-import DotsButton from './DotsButton/DotsButton';
-import SearchButton from './SearchButton/SearchButton';
-import SortButton from './SortButton/SortButton';
 
 const Adjustments = () => {
   return (

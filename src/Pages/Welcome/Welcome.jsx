@@ -7,11 +7,10 @@ const Welcome = () => {
   const credentials = JSON.parse(localStorage.getItem('userData'));
 
   const EMAIL = credentials && credentials.email;
-  const FIRSTNAME = credentials && credentials.firstName;
 
   return (
     <>
-      {!EMAIL && <div>Welcome {FIRSTNAME && FIRSTNAME}</div>}
+      {!EMAIL && <div>Welcome</div>}
       {!EMAIL && <Link to='register'>Register</Link>}
       {!EMAIL && <Link to='login'>Login</Link>}
       {EMAIL && <Homepage />}

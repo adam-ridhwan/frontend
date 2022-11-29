@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
 
-import { TodosProvider } from './Pages/Context/TodosContext';
+import { TodosProvider } from './Context/TodosContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
