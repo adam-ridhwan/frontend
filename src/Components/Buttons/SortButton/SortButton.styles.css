@@ -78,14 +78,14 @@
 
 .dropdown-menu button:first-child:hover,
 .dropdown-menu button:nth-child(2):hover {
-  transition: background-color 150ms ease-in-out 0s;
+  transition: background-color 100ms ease-in-out 0s;
   cursor: pointer;
   background: rgba(55, 53, 47, 0.08);
   border-radius: 3px;
 }
 
 .dropdown-menu button:last-child:hover {
-  transition: background-color 150ms ease-in 0s;
+  transition: background-color 100ms ease-in 0s;
   cursor: pointer;
   background: rgb(250, 228, 222);
   border-radius: 3px;

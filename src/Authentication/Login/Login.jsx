@@ -34,18 +34,18 @@ const Login = () => {
 
   return (
     <>
-      <div>
-        <h1>Login</h1>
+      <div className='login-container'>
+        <h2>Login</h2>
         <form onSubmit={loginUser}>
           <input
-            placeholder='email'
+            placeholder='Email'
             autoComplete='off'
             onChange={e => setEmail(e.target.value)}
           />
           <br />
           <input
             type='password'
-            placeholder='password'
+            placeholder='Password'
             autoComplete='off'
             onChange={e => setPassword(e.target.value)}
           />

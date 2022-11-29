@@ -76,14 +76,14 @@
 }
 
 .my-tasks-drpdwn button:first-child:hover {
-  transition: background-color 150ms ease-in 0s;
+  transition: background-color 100ms ease-in 0s;
   cursor: pointer;
   background: rgb(229, 243, 235);
   border-radius: 3px;
 }
 
 .my-tasks-drpdwn button:nth-child(1):hover {
-  transition: background-color 150ms ease-in 0s;
+  transition: background-color 100ms ease-in 0s;
   cursor: pointer;
   background: rgb(250, 228, 222);
   border-radius: 3px;

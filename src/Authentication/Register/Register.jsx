@@ -58,8 +58,8 @@ const Register = () => {
 
   return (
     <>
-      <div>
-        <h1>Create an account</h1>
+      <div className='register-container'>
+        <h2>Create an account</h2>
         <form onSubmit={registerUser} autoComplete='off'>
           <input
             type='text'
