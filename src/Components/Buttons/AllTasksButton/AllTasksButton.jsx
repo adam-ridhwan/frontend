@@ -65,6 +65,7 @@ const AllTasksButton = () => {
             borderRadius: '3px',
           }}
           className='allTasks-button'
+          // toggle dropdown
           onClick={() =>
             setIsTasksDrpdwnOpen(isTasksDrpdwnOpen => !isTasksDrpdwnOpen)
           }

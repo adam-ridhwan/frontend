@@ -2,8 +2,6 @@ import { createContext, useState } from 'react';
 
 export const TodosContext = createContext();
 const ALLTASKS = 'All tasks';
-const COMPLETEDTASKS = 'Completed tasks';
-const INCOMPLETETASKS = 'Incomplete tasks';
 
 export const TodosProvider = ({ children }) => {
   const [todos, setTodos] = useState([]);

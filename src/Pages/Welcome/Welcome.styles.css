@@ -11,7 +11,7 @@
   width: 100px;
   height: 30px;
   margin: 0 10px;
-
+  cursor: pointer;
   border: 1px solid darkgray;
   border-radius: 3px;
 }

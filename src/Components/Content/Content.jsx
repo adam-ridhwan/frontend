@@ -19,8 +19,7 @@ const Content = () => {
   const [hoveredOnDivTask, setHoveredOnDivTask] = useState(null);
   const [hoveredOnTextarea, setHoveredOnTextarea] = useState(null);
   const [focusedTextarea, setFocusedTextarea] = useState(null);
-  const [isTextareaClicked, setIsTextAreaClicked] = useState(false);
-  const [textAreaValue, setTextAreaValue] = useState('');
+  const [setTextAreaValue] = useState('');
   const [updateTodoObject, setUpdateTodoObject] = useState(null);
   const [render, setRender] = useState(true);
 
@@ -50,9 +49,9 @@ const Content = () => {
 
   const addTaskInputRef = useRef();
 
+  // add new todo
   const AddNewTodo = (e, todoText) => {
     e.preventDefault();
-
     if (!todoText) return;
     const newTodo = {
       id: uuidv4(),
@@ -66,6 +65,7 @@ const Content = () => {
     PostTodos(newTodos);
   };
 
+  // toggle checkmark
   const toggleCheckedTodo = (ref, todo) => {
     const newTodos = [...todos];
     const selectedTodo = Object.values(todos).find(obj => obj.id === todo.id);
@@ -93,26 +93,24 @@ const Content = () => {
   }, [sortValue, filter]);
 
   const onChangeTextarea = (e, selectedTodoToChange) => {
-    setTextAreaValue(e.target.value);
     let newUserTodos = [...todos];
     const selectedTodo = Object.values(newUserTodos).find(
       todo => todo.id === selectedTodoToChange.id
     );
     const todoIndex = newUserTodos.indexOf(selectedTodo);
     newUserTodos[todoIndex].event = e.target.value;
-    // setTodos(newUserTodos);
+    setTodos(newUserTodos); // IMPORTANT
   };
 
   useEffect(() => {
     const editTextrea = e => {
-      if (isTextareaClicked === false) return;
-      const textarea = focusedTextarea.current;
-      if (textarea !== e.target || textarea === null) {
-        textarea.setSelectionRange(0, 0);
-        textarea.focus();
-        textarea.blur();
+      if (focusedTextarea === null) return;
+      if (focusedTextarea !== e.target) {
+        focusedTextarea.setSelectionRange(0, 0);
+        focusedTextarea.focus();
+        focusedTextarea.blur();
+
         setFocusedTextarea(null);
-        setIsTextAreaClicked(() => false);
       }
     };
     document.addEventListener('click', editTextrea);
@@ -249,18 +247,15 @@ const Content = () => {
                         onChange={$event => onChangeTextarea($event, todo)}
                         onFocus={e => {
                           setHoveredOnDivTask(null);
-                          setIsTextAreaClicked(() => true);
-                          setFocusedTextarea(textareaRefsById[todo.id]);
+                          setFocusedTextarea(textareaRefsById[todo.id].current);
                           setUpdateTodoObject(todo);
                         }}
                         onBlur={() => {
-                          setIsTextAreaClicked(() => false);
                           UpdateTodos(todo);
                         }}
                         onKeyPress={e => {
                           if (e.key === 'Enter') {
                             e.preventDefault();
-                            setIsTextAreaClicked(() => false);
                             UpdateTodos(todo);
                           }
                         }}
