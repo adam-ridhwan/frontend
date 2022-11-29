@@ -19,7 +19,8 @@ const Content = () => {
   const [hoveredOnDivTask, setHoveredOnDivTask] = useState(null);
   const [hoveredOnTextarea, setHoveredOnTextarea] = useState(null);
   const [focusedTextarea, setFocusedTextarea] = useState(null);
-  const [textAreaValue, setTextAreaValue] = useState(null);
+  const [isTextareaClicked, setIsTextAreaClicked] = useState(false);
+  const [textAreaValue, setTextAreaValue] = useState('');
   const [updateTodoObject, setUpdateTodoObject] = useState(null);
   const [render, setRender] = useState(true);
 
@@ -103,14 +104,15 @@ const Content = () => {
   };
 
   useEffect(() => {
-    const editTextrea = event => {
-      if (focusedTextarea === null) return;
+    const editTextrea = e => {
+      if (isTextareaClicked === false) return;
       const textarea = focusedTextarea.current;
-      if (textarea !== event.target) {
+      if (textarea !== e.target || textarea === null) {
         textarea.setSelectionRange(0, 0);
         textarea.focus();
         textarea.blur();
         setFocusedTextarea(null);
+        setIsTextAreaClicked(() => false);
       }
     };
     document.addEventListener('click', editTextrea);
@@ -247,15 +249,20 @@ const Content = () => {
                         onChange={$event => onChangeTextarea($event, todo)}
                         onFocus={e => {
                           setHoveredOnDivTask(null);
+                          setIsTextAreaClicked(() => true);
                           setFocusedTextarea(textareaRefsById[todo.id]);
                           setUpdateTodoObject(todo);
                         }}
                         onBlur={() => {
-                          if (updateTodoObject === null) return;
-                          UpdateTodos(updateTodoObject);
+                          setIsTextAreaClicked(() => false);
+                          UpdateTodos(todo);
                         }}
                         onKeyPress={e => {
-                          if (e.key === 'Enter') e.preventDefault();
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            setIsTextAreaClicked(() => false);
+                            UpdateTodos(todo);
+                          }
                         }}
                       ></textarea>
                     </label>

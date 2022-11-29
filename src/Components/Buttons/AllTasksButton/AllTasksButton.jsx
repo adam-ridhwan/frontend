@@ -14,13 +14,13 @@ const AllTasksButton = () => {
   const allTasksBtnRef = useRef();
 
   const handleIcon = () => {
-    if (filter === ALLTASKS) return clipboard;
+    if (filter === ALLTASKS) return filterIcon;
     if (filter === COMPLETEDTASKS) return checkedBox;
     if (filter === INCOMPLETETASKS) return uncheckedBox;
   };
 
   const handleText = () => {
-    if (filter === ALLTASKS) return ALLTASKS;
+    if (filter === ALLTASKS) return 'Filter';
     if (filter === COMPLETEDTASKS) return COMPLETEDTASKS;
     if (filter === INCOMPLETETASKS) return INCOMPLETETASKS;
   };
@@ -71,7 +71,7 @@ const AllTasksButton = () => {
           onMouseEnter={() => setIsDrpdwnBtnHovered(true)}
           onMouseLeave={() => setIsDrpdwnBtnHovered(false)}
         >
-          <span>{handleIcon()}</span>
+          <span className='tasks-icon'>{handleIcon()}</span>
           <p style={{ color: filter !== ALLTASKS && 'rgb(60, 124, 228)' }}>
             {handleText()}
           </p>
@@ -80,22 +80,22 @@ const AllTasksButton = () => {
         <div className='allTasks-drpdwn-menu'>
           <button
             onClick={() => {
-              setFilter(COMPLETEDTASKS);
-              setIsTasksDrpdwnOpen(false);
-            }}
-          >
-            <span>{checkedBox}</span>
-            <p>Completed Tasks</p>
-          </button>
-
-          <button
-            onClick={() => {
               setFilter(INCOMPLETETASKS);
               setIsTasksDrpdwnOpen(false);
             }}
           >
             <span>{uncheckedBox}</span>
             <p>Incomplete Tasks</p>
+          </button>
+
+          <button
+            onClick={() => {
+              setFilter(COMPLETEDTASKS);
+              setIsTasksDrpdwnOpen(false);
+            }}
+          >
+            <span>{checkedBox}</span>
+            <p>Completed Tasks</p>
           </button>
 
           <button
@@ -137,6 +137,27 @@ const uncheckedBox = (
     }}
   >
     <path d='M405.333 64H106.667C83.198 64 64 83.198 64 106.667v298.666C64 428.802 83.198 448 106.667 448h298.666C428.802 448 448 428.802 448 405.333V106.667C448 83.198 428.802 64 405.333 64z' />
+  </svg>
+);
+
+const filterIcon = (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width='15px'
+    height='15px'
+    fill='rgba(55, 53, 47, 0.65)'
+    viewBox='0 0 22 20'
+  >
+    <path
+      fill='none'
+      fillRule='evenodd'
+      stroke='rgba(55, 53, 47, 0.65)'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      strokeWidth='2'
+      d='M20 0H0l8 9.46V16l4 2V9.46z'
+      transform='translate(1 1)'
+    />
   </svg>
 );
 
