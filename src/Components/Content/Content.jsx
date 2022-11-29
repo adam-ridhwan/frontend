@@ -109,7 +109,6 @@ const Content = () => {
         focusedTextarea.setSelectionRange(0, 0);
         focusedTextarea.focus();
         focusedTextarea.blur();
-
         setFocusedTextarea(null);
       }
     };
