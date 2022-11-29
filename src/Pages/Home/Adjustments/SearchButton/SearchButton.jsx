@@ -3,14 +3,21 @@ import { useEffect, useRef, useState } from 'react';
 import './SearchButton.styles.css';
 
 const SearchButton = () => {
+  const [searchField, setSearchField] = useState('');
   const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
-  const divTaskRef = useRef();
+  const inputFieldRef = useRef();
+
+  const handleSearchChange = event => {
+    const searchFieldString = event.target.value.toLocaleLowerCase();
+    console.log(searchFieldString);
+    setSearchField(searchFieldString);
+  };
 
   // handle focus on search bar
   useEffect(() => {
     if (isSearchBarVisible) {
-      divTaskRef.current.focus();
+      inputFieldRef.current.focus();
     }
   }, [isSearchBarVisible]);
 
@@ -26,7 +33,7 @@ const SearchButton = () => {
 
   // handle click outside of search bar
   const handleDefocus = () => {
-    if (divTaskRef.current.value) return;
+    if (inputFieldRef.current.value) return;
     setTimeout(() => {
       setIsSearchBarVisible(false);
     }, 600);
@@ -43,13 +50,13 @@ const SearchButton = () => {
       {isSearchBarVisible ? (
         <div className='search-navigation'>
           <input
-            ref={divTaskRef}
+            ref={inputFieldRef}
             id='searchBar'
             type='search'
             placeholder='Type to search...'
             aria-label='search'
             className='search-bar'
-            // onChange={handleSearchChange}
+            onChange={handleSearchChange}
             onBlur={handleDefocus}
             required
             autoComplete='off'

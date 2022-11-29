@@ -1,5 +1,12 @@
-import isEqual from 'lodash/isEqual';
-import { useContext, useEffect, useRef, useState } from 'react';
+import {
+  createRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { TodosContext } from '../../Context/TodosContext';
@@ -7,34 +14,57 @@ import Adjustments from '../Adjustments/Adjustments';
 
 import './Content.styles.css';
 
+const ALLTASKS = 'All tasks';
+const COMPLETEDTASKS = 'Completed tasks';
+const INCOMPLETETASKS = 'Incomplete tasks';
+
+const ASCENDING = 'ASCENDING';
+const DESCENDING = 'DESCENDING';
+const REMOVESORT = 'REMOVESORT';
+
+const CLASSNAME = 'greenBackground';
+
 const Content = () => {
   const credentials = JSON.parse(localStorage.getItem('userData'));
-
   const EMAIL = credentials.email;
   const PASSWORD = credentials.password;
 
-  const { todos, setTodos } = useContext(TodosContext);
+  const { todos, setTodos, filter, sortedTodos, sortValue } =
+    useContext(TodosContext);
   const [todoText, setTodoText] = useState('');
 
-  const divTaskRef = useRef([...Array(todos.length)].map(() => []));
-  const textareaRef = useRef([...Array(todos.length)].map(() => []));
-  const addTaskInputRef = useRef();
-
   const [hoveredOnDivTask, setHoveredOnDivTask] = useState(null);
+  const [hoveredOnTextarea, setHoveredOnTextarea] = useState(null);
   const [focusedTextarea, setFocusedTextarea] = useState(null);
-  const [updateTodoObject, setupdateTodoObject] = useState(null);
-  const [isInitialRender, setIsInitialRender] = useState(true);
+  const [textAreaValue, setTextAreaValue] = useState(null);
+  const [updateTodoObject, setUpdateTodoObject] = useState(null);
+  const [render, setRender] = useState(true);
 
-  const addTodos = newTodos => {
-    fetch(`http://localhost:4000/todos`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${EMAIL}:${PASSWORD}`,
-      },
-      body: JSON.stringify(newTodos),
-    }).then(() => {});
-  };
+  const divTasksRefsById = useMemo(() => {
+    const refs = {};
+    todos.forEach(todo => {
+      refs[todo.id] = createRef(null);
+    });
+    return refs;
+  }, [todos]);
+
+  const textareaRefsById = useMemo(() => {
+    const refs = {};
+    todos.forEach(todo => {
+      refs[todo.id] = createRef(null);
+    });
+    return refs;
+  }, [todos]);
+
+  const greenBackgroundRefsById = useMemo(() => {
+    const refs = {};
+    todos.forEach(todo => {
+      refs[todo.id] = createRef(null);
+    });
+    return refs;
+  }, [todos]);
+
+  const addTaskInputRef = useRef();
 
   useEffect(() => {
     fetch(`http://localhost:4000/todos`, {
@@ -48,8 +78,19 @@ const Content = () => {
       .then(todos => setTodos(todos));
   }, [EMAIL, PASSWORD, setTodos]);
 
+  const addTodos = newTodos => {
+    fetch(`http://localhost:4000/todos`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Basic ${EMAIL}:${PASSWORD}`,
+      },
+      body: JSON.stringify(newTodos),
+    }).then(() => {});
+  };
+
   const updateTodo = updateTodoObject => {
-    fetch(`http://localhost:4000/todos/event`, {
+    fetch(`http://localhost:4000/todos`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -73,74 +114,104 @@ const Content = () => {
     addTodos(newTodos);
   };
 
-  const toggleTodo = todoIndex => {
-    setHoveredOnDivTask(null);
-    setIsInitialRender(false);
+  const toggleCheckedTodo = (ref, todo) => {
     const newTodoArray = [...todos];
-    newTodoArray[todoIndex]['finished'] = !newTodoArray[todoIndex]['finished'];
+    const selectedTodo = Object.values(todos).find(obj => obj.id === todo.id);
+    const todoIndex = todos.indexOf(selectedTodo);
+    newTodoArray[todoIndex].finished = !newTodoArray[todoIndex].finished;
+
+    if (todo.finished) ref.current.classList.add(CLASSNAME);
+    if (!todo.finished) ref.current.classList.remove(CLASSNAME);
+
     setTodos(newTodoArray);
     addTodos(newTodoArray);
   };
 
-  const onChangeTextarea = (e, todoIndex) => {
+  const memoized = useCallback(() => {
+    for (const [, value] of Object.entries(greenBackgroundRefsById)) {
+      if (value.current !== null) {
+        value.current.classList.remove(CLASSNAME);
+      }
+    }
+  }, [greenBackgroundRefsById]);
+
+  useEffect(() => {
+    memoized();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortValue, filter]);
+
+  const onChangeTextarea = (e, selectedTodoToChange) => {
+    setTextAreaValue(e.target.value);
     let newUserTodos = [...todos];
-    todos[todoIndex]['event'] = e.target.value;
-    setTodos(newUserTodos);
+    const selectedTodo = Object.values(newUserTodos).find(
+      todo => todo.id === selectedTodoToChange.id
+    );
+    const todoIndex = newUserTodos.indexOf(selectedTodo);
+    newUserTodos[todoIndex].event = e.target.value;
+    // setTodos(newUserTodos);
   };
 
   useEffect(() => {
-    const updateTextArea = event => {
+    const editTextrea = event => {
       if (focusedTextarea === null) return;
-      if (!focusedTextarea.contains(event.target)) {
-        focusedTextarea.setSelectionRange(0, 0);
-        focusedTextarea.focus();
-        focusedTextarea.blur();
-        setupdateTodoObject(null);
+      const textarea = focusedTextarea.current;
+      if (textarea !== event.target) {
+        textarea.setSelectionRange(0, 0);
+        textarea.focus();
+        textarea.blur();
         setFocusedTextarea(null);
       }
     };
-    document.addEventListener('click', updateTextArea);
+    document.addEventListener('click', editTextrea);
     return () => {
-      document.removeEventListener('click', updateTextArea);
-    };
-  });
-
-  useEffect(() => {
-    const pressedEnterSave = event => {
-      if (focusedTextarea === null) return;
-      if (event.keyCode === 13 || event.which === 13) {
-        event.preventDefault();
-        focusedTextarea.setSelectionRange(0, 0);
-        focusedTextarea.focus();
-        focusedTextarea.blur();
-        setupdateTodoObject(null);
-        setFocusedTextarea(null);
-        return false;
-      }
-    };
-    document.addEventListener('keypress', pressedEnterSave);
-    return () => {
-      document.removeEventListener('keypress', pressedEnterSave);
+      document.removeEventListener('click', editTextrea);
     };
   });
 
   const getTodos = () => {
-    return todos;
+    if (filter === ALLTASKS && sortValue === REMOVESORT) return todos;
+
+    let adjustedTodo = [...todos];
+
+    if (sortValue !== REMOVESORT) {
+      if (sortValue === ASCENDING) {
+        adjustedTodo = adjustedTodo.sort((obj1, obj2) =>
+          obj1.event < obj2.event ? -1 : obj1.event > obj2.event ? 1 : 0
+        );
+      }
+      if (sortValue === DESCENDING) {
+        adjustedTodo = adjustedTodo.sort((obj1, obj2) =>
+          obj1.event < obj2.event ? 1 : obj1.event > obj2.event ? -1 : 0
+        );
+      }
+    }
+
+    if (filter !== ALLTASKS) {
+      if (filter === COMPLETEDTASKS) {
+        adjustedTodo = adjustedTodo.filter(todo => todo.finished === true);
+      }
+
+      if (filter === INCOMPLETETASKS) {
+        adjustedTodo = adjustedTodo.filter(todo => todo.finished === false);
+      }
+    }
+
+    return adjustedTodo;
   };
 
   useEffect(() => {
     setTimeout(() => {
-      setIsInitialRender(false);
-    }, 1500);
-  });
+      setRender(false);
+    }, 1000);
+  }, [sortValue, filter]);
 
   // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
   return (
     <>
       <div
-        style={{ opacity: isInitialRender === true ? '0' : '1' }}
-        className='initialRenderOpacity'
+        style={{ opacity: render === true ? '0' : '1' }}
+        className={render !== true ? 'render' : 're-render'}
       >
         <div className='global-content-container'>
           <Adjustments />
@@ -152,51 +223,39 @@ const Content = () => {
             }}
           />
 
-          {getTodos().map((todo, todoIndex) => {
+          {getTodos().map(todo => {
             return (
               <div
-                key={todoIndex}
+                ref={divTasksRefsById[todo.id]}
+                key={todo.id}
+                className='outer-div-container'
                 style={{
                   background:
-                    isEqual(divTaskRef.current[todoIndex], hoveredOnDivTask) &&
-                    'rgb(244,244,244)',
-                  outline: isEqual(
-                    divTaskRef.current[todoIndex],
-                    hoveredOnDivTask
-                  )
-                    ? '1px solid darkgray'
-                    : '1px solid transparent',
-
+                    hoveredOnDivTask === divTasksRefsById[todo.id] &&
+                    'rgb(244, 244, 244)',
+                  outline:
+                    hoveredOnDivTask === divTasksRefsById[todo.id] &&
+                    '1px solid rgb(171,171,171)',
                   position: 'relative',
                 }}
+                onMouseEnter={() =>
+                  setHoveredOnDivTask(divTasksRefsById[todo.id])
+                }
+                onMouseLeave={() => setHoveredOnDivTask(null)}
               >
-                <div
-                  className={todo['finished'] === true ? 'greenBackground' : ''}
-                ></div>
-
-                <div
-                  ref={ref => (divTaskRef.current[todoIndex] = ref)}
-                  className='tasks-container'
-                  style={{
-                    borderBottom: isEqual(
-                      divTaskRef.current[todoIndex],
-                      hoveredOnDivTask
-                    )
-                      ? '1px solid transparent'
-                      : '1px solid rgb(234, 234, 234)',
-                  }}
-                  onMouseEnter={() => {
-                    setHoveredOnDivTask(divTaskRef.current[todoIndex]);
-                  }}
-                  onMouseLeave={() => {
-                    setHoveredOnDivTask(null);
-                  }}
-                >
+                <div ref={greenBackgroundRefsById[todo.id]}></div>
+                <div className='tasks-container'>
                   <span
                     className='checkbox-icon'
-                    onClick={() => toggleTodo(todoIndex)}
+                    onClick={() => {
+                      toggleCheckedTodo(
+                        greenBackgroundRefsById[todo.id],
+                        todo,
+                        greenBackgroundRefsById
+                      );
+                    }}
                   >
-                    {todo['finished'] ? checkedBox : uncheckedBox}
+                    {todo.finished ? checkedBox : uncheckedBox}
                   </span>
 
                   <div
@@ -206,34 +265,41 @@ const Content = () => {
                     }}
                   >
                     <label>
-                      <div className='div-tasks'>{todo['event']}</div>
-
+                      <div className='div-tasks'>{todo.event}</div>
                       <textarea
-                        ref={ref => (textareaRef.current[todoIndex] = ref)}
-                        defaultValue={todo['event']}
+                        ref={textareaRefsById[todo.id]}
+                        defaultValue={todo.event}
                         rows='1'
                         tabIndex='-1'
-                        className={
-                          isEqual(
-                            divTaskRef.current[todoIndex],
-                            hoveredOnDivTask
-                          )
-                            ? 'my-text-area-hovered'
-                            : 'my-text-area'
-                        }
+                        spellCheck='false'
+                        className='my-text-area'
                         style={{
                           color:
                             todo['finished'] === true ? '#bbbbbb' : '#535559',
+                          border: 'none',
+                          borderRadius: '1pt',
+                          boxShadow:
+                            hoveredOnDivTask === divTasksRefsById[todo.id] &&
+                            `0 0 0 1pt ${
+                              hoveredOnTextarea === textareaRefsById[todo.id]
+                                ? 'rgb(110,110,110)'
+                                : 'darkgray'
+                            } `,
                         }}
-                        onChange={$event => onChangeTextarea($event, todoIndex)}
+                        onMouseEnter={() =>
+                          setHoveredOnTextarea(textareaRefsById[todo.id])
+                        }
+                        onMouseLeave={() => setHoveredOnTextarea(null)}
+                        onChange={$event => onChangeTextarea($event, todo)}
+                        onFocus={e => {
+                          setHoveredOnDivTask(null);
+                          setFocusedTextarea(textareaRefsById[todo.id]);
+                          setUpdateTodoObject(todo);
+                        }}
                         onBlur={() => {
                           if (updateTodoObject === null) return;
+
                           updateTodo(updateTodoObject);
-                        }}
-                        onFocus={() => {
-                          setFocusedTextarea(textareaRef.current[todoIndex]);
-                          setupdateTodoObject(todo);
-                          setHoveredOnDivTask(null);
                         }}
                       ></textarea>
                     </label>
@@ -259,6 +325,7 @@ const Content = () => {
           </div>
         </div>
       </div>
+
       <footer style={{ height: '50px' }}></footer>
     </>
   );

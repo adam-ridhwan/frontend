@@ -2,7 +2,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
   position: relative;
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
@@ -10,19 +9,21 @@
 }
 
 .allTasks-button {
-  color: rgba(55, 53, 47, 0.65);
   border: none;
   background: none;
   cursor: pointer;
   height: 30px;
   padding: 0px 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
-
-.allTasks-button:hover {
-  transition: background-color 20ms ease-in 0s;
-  cursor: pointer;
-  background: rgba(55, 53, 47, 0.08);
-  border-radius: 3px;
+.allTasks-button span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .allTasks-drpdwn-menu {
@@ -57,6 +58,7 @@
 .allTasks-drpdwn-menu button {
   display: flex;
   align-items: center;
+
   height: 30px;
   border: none;
   background: none;

@@ -125,7 +125,7 @@ app.get('/todos', async (req, res) => {
   res.json(todos);
 });
 
-app.put('/todos/event', async (req, res) => {
+app.put('/todos', async (req, res) => {
   const { authorization } = req.headers;
   const [, token] = authorization.split(' ');
   const [email, password] = token.split(':');
@@ -140,6 +140,7 @@ app.put('/todos/event', async (req, res) => {
   const query = { userId: user._id, 'todos.id': todo.id };
   const update = { $set: { 'todos.$.event': todo.event } };
   const updateEvent = await Todos.findOneAndUpdate(query, update).exec();
+
   res.json(updateEvent);
 });
 
@@ -158,4 +159,20 @@ app.put('/reset', async (req, res) => {
   const update = { $set: { todos: [] } };
   const resetTodos = await Todos.findOneAndUpdate(query, update).exec();
   res.json(resetTodos);
+});
+
+app.put('/delete', async (req, res) => {
+  const { authorization } = req.headers;
+  const [, token] = authorization.split(' ');
+  const [email, password] = token.split(':');
+  const user = await User.findOne({ email }).exec();
+  const todo = req.body;
+
+  if (!user || user.password !== password) {
+    res.status(403);
+    res.json({ message: 'invalid access' });
+    return;
+  }
+
+  res.json();
 });

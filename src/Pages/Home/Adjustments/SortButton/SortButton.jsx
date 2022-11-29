@@ -1,8 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import './SortButton.styles.css';
 
+import { TodosContext } from '../../../Context/TodosContext';
+
+const ASCENDING = 'ASCENDING';
+const DESCENDING = 'DESCENDING';
+const REMOVESORT = 'REMOVESORT';
+
 const SortButton = () => {
+  const { sortValue, setSortValue } = useContext(TodosContext);
   const [isSortDrpdwnOpen, setIsSortDrpdwnOpen] = useState(false);
+  const [isDrpdwnBtnHovered, setIsDrpdwnBtnHovered] = useState(false);
   const sortBtnRef = useRef();
 
   // check to see if mouse is clicked outside of sort button
@@ -27,27 +35,66 @@ const SortButton = () => {
       : sortDrpdwn.classList.remove('active');
   }, [isSortDrpdwnOpen]);
 
+  const handleSortIcon = () => {
+    if (sortValue === REMOVESORT) return sort;
+    if (sortValue === ASCENDING) return checkedArrowUP;
+    if (sortValue === DESCENDING) return checkedArrowDown;
+  };
+
+  const handleSortText = () => {
+    if (sortValue === REMOVESORT) return 'Sort';
+    if (sortValue === ASCENDING) return 'Ascending';
+    if (sortValue === DESCENDING) return 'Descending';
+  };
+
   // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
   return (
     <>
       <div ref={sortBtnRef} className='sort-container'>
         <button
+          style={{
+            transition: 'background-color 20ms ease-in 0s',
+            cursor: 'pointer',
+            background:
+              isDrpdwnBtnHovered &&
+              `${
+                sortValue === REMOVESORT
+                  ? 'rgba(55, 53, 47, 0.08)'
+                  : 'rgb(218, 234, 241)'
+              }`,
+            borderRadius: '3px',
+          }}
           className='sort-button'
           onClick={() =>
             setIsSortDrpdwnOpen(isSortDrpdwnOpen => !isSortDrpdwnOpen)
           }
+          onMouseEnter={() => setIsDrpdwnBtnHovered(true)}
+          onMouseLeave={() => setIsDrpdwnBtnHovered(false)}
         >
-          <p>Sort</p>
+          <span>{handleSortIcon()}</span>
+          <p style={{ color: sortValue !== REMOVESORT && 'rgb(60, 124, 228)' }}>
+            {handleSortText()}
+          </p>
         </button>
 
         <div className='dropdown-menu'>
-          <button>
+          <button
+            onClick={() => {
+              setSortValue(ASCENDING);
+              setIsSortDrpdwnOpen(false);
+            }}
+          >
             <span>{arrowUp}</span>
             <p>Ascending</p>
           </button>
 
-          <button>
+          <button
+            onClick={() => {
+              setSortValue(DESCENDING);
+              setIsSortDrpdwnOpen(false);
+            }}
+          >
             <span>{arrowDown}</span>
             <p>Descending</p>
           </button>
@@ -62,7 +109,12 @@ const SortButton = () => {
             }}
           />
 
-          <button>
+          <button
+            onClick={() => {
+              setSortValue(REMOVESORT);
+              setIsSortDrpdwnOpen(false);
+            }}
+          >
             <span>{trashcan}</span>
             <p>Remove Sort</p>
           </button>
@@ -73,6 +125,23 @@ const SortButton = () => {
 };
 
 export default SortButton;
+
+const sort = (
+  <svg
+    id='Layer_1'
+    enableBackground='new 0 0 20 20'
+    viewBox='0 0 20 20'
+    width='15px'
+    height='15px'
+    xmlns='http://www.w3.org/2000/svg'
+  >
+    <g fill='rgba(55, 53, 47, 0.65)'>
+      <path d='m17.6 14.6-1.6 1.6v-16.2h-2v16.2l-1.5-1.6-1.4 1.5 3.9 3.9 4-3.9z' />
+      <path d='m8.8 12.6c.3-.3.3-.7.1-1.1-.1-.3-.5-.5-.9-.5h-7v2h4.8l-4.6 5.3c-.3.3-.3.7-.1 1.1s.5.6.9.6h7v-2h-4.8z' />
+      <path d='m5.9.6c-.1-.4-.5-.6-.9-.6s-.7.2-.9.6l-3 7c-.2.5 0 1.1.5 1.3s1.1 0 1.3-.5l.6-1.4h3l.6 1.4c.4.8 1.2.6 1.3.5.5-.2.7-.8.5-1.3zm-1.5 4.4.6-1.5.6 1.5z' />
+    </g>
+  </svg>
+);
 
 const arrowDown = (
   <svg
@@ -126,6 +195,66 @@ const arrowUp = (
     <polyline
       fill='none'
       stroke='rgba(55, 53, 47, 0.65)'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      strokeWidth='24'
+      points='56 112 128 40 200 112'
+    />
+  </svg>
+);
+
+const checkedArrowDown = (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    viewBox='0 0 256 256'
+    width='15px'
+    height='15px'
+  >
+    <rect width='256' height='256' fill='none' />
+    <line
+      x1='128'
+      x2='128'
+      y1='40'
+      y2='216'
+      fill='none'
+      stroke='rgb(60, 124, 228)'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      strokeWidth='24'
+    />
+    <polyline
+      fill='none'
+      stroke='rgb(60, 124, 228)'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      strokeWidth='24'
+      points='56 144 128 216 200 144'
+    />
+  </svg>
+);
+
+const checkedArrowUP = (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    viewBox='0 0 256 256'
+    width='15px'
+    height='15px'
+  >
+    <rect width='256' height='256' fill='none' />
+    <line
+      x1='128'
+      x2='128'
+      y1='216'
+      y2='40'
+      fill='none'
+      stroke='rgb(60, 124, 228)'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      strokeWidth='24'
+    />
+    <polyline
+      fill='none'
+      stroke='rgb(60, 124, 228)'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth='24'

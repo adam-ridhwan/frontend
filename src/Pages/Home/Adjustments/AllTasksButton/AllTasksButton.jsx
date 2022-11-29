@@ -1,9 +1,29 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import './AllTasksButton.styles.css';
 
+import { TodosContext } from '../../../Context/TodosContext';
+
+const ALLTASKS = 'All tasks';
+const COMPLETEDTASKS = 'Completed tasks';
+const INCOMPLETETASKS = 'Incomplete tasks';
+
 const AllTasksButton = () => {
+  const { filter, setFilter } = useContext(TodosContext);
   const [isTasksDrpdwnOpen, setIsTasksDrpdwnOpen] = useState(false);
+  const [isDrpdwnBtnHovered, setIsDrpdwnBtnHovered] = useState(false);
   const allTasksBtnRef = useRef();
+
+  const handleIcon = () => {
+    if (filter === ALLTASKS) return clipboard;
+    if (filter === COMPLETEDTASKS) return checkedBox;
+    if (filter === INCOMPLETETASKS) return uncheckedBox;
+  };
+
+  const handleText = () => {
+    if (filter === ALLTASKS) return ALLTASKS;
+    if (filter === COMPLETEDTASKS) return COMPLETEDTASKS;
+    if (filter === INCOMPLETETASKS) return INCOMPLETETASKS;
+  };
 
   // check to see if mouse is clicked outside of All Tasks button
   useEffect(() => {
@@ -21,7 +41,6 @@ const AllTasksButton = () => {
   // open or close dropdown
   useEffect(() => {
     const allTaskDrpdwn = allTasksBtnRef.current;
-
     isTasksDrpdwnOpen
       ? allTaskDrpdwn.classList.add('active')
       : allTaskDrpdwn.classList.remove('active');
@@ -33,26 +52,58 @@ const AllTasksButton = () => {
     <>
       <div ref={allTasksBtnRef} className='allTasks-container'>
         <button
+          style={{
+            transition: 'background-color 20ms ease-in 0s',
+            cursor: 'pointer',
+            background:
+              isDrpdwnBtnHovered &&
+              `${
+                filter === ALLTASKS
+                  ? 'rgba(55, 53, 47, 0.08)'
+                  : 'rgb(218, 234, 241)'
+              }`,
+            borderRadius: '3px',
+          }}
           className='allTasks-button'
           onClick={() =>
             setIsTasksDrpdwnOpen(isTasksDrpdwnOpen => !isTasksDrpdwnOpen)
           }
+          onMouseEnter={() => setIsDrpdwnBtnHovered(true)}
+          onMouseLeave={() => setIsDrpdwnBtnHovered(false)}
         >
-          <p>All Tasks</p>
+          <span>{handleIcon()}</span>
+          <p style={{ color: filter !== ALLTASKS && 'rgb(60, 124, 228)' }}>
+            {handleText()}
+          </p>
         </button>
 
         <div className='allTasks-drpdwn-menu'>
-          <button>
+          <button
+            onClick={() => {
+              setFilter(ALLTASKS);
+              setIsTasksDrpdwnOpen(false);
+            }}
+          >
             <span>{clipboard}</span>
             <p>All Tasks</p>
           </button>
 
-          <button>
+          <button
+            onClick={() => {
+              setFilter(COMPLETEDTASKS);
+              setIsTasksDrpdwnOpen(false);
+            }}
+          >
             <span>{checkedBox}</span>
             <p>Completed Tasks</p>
           </button>
 
-          <button>
+          <button
+            onClick={() => {
+              setFilter(INCOMPLETETASKS);
+              setIsTasksDrpdwnOpen(false);
+            }}
+          >
             <span>{uncheckedBox}</span>
             <p>Incomplete Tasks</p>
           </button>
