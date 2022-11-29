@@ -8,7 +8,7 @@ const INCOMPLETETASKS = 'Incomplete tasks';
 export const TodosProvider = ({ children }) => {
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState(ALLTASKS);
-  const [sortedTodos, setSortedTodos] = useState([]);
+  const [searchField, setSearchField] = useState('');
   const [sortValue, setSortValue] = useState('REMOVESORT');
 
   return (
@@ -18,8 +18,8 @@ export const TodosProvider = ({ children }) => {
         setTodos,
         filter,
         setFilter,
-        sortedTodos,
-        setSortedTodos,
+        searchField,
+        setSearchField,
         sortValue,
         setSortValue,
       }}

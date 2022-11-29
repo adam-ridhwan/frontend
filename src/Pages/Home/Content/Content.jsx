@@ -29,7 +29,7 @@ const Content = () => {
   const EMAIL = credentials.email;
   const PASSWORD = credentials.password;
 
-  const { todos, setTodos, filter, sortedTodos, sortValue } =
+  const { todos, setTodos, filter, searchField, sortValue } =
     useContext(TodosContext);
   const [todoText, setTodoText] = useState('');
 
@@ -169,7 +169,11 @@ const Content = () => {
   });
 
   const getTodos = () => {
-    if (filter === ALLTASKS && sortValue === REMOVESORT) return todos;
+    if (filter === ALLTASKS && sortValue === REMOVESORT) {
+      return todos.filter(todo =>
+        todo.event.toLocaleLowerCase().includes(searchField)
+      );
+    }
 
     let adjustedTodo = [...todos];
 
@@ -196,7 +200,9 @@ const Content = () => {
       }
     }
 
-    return adjustedTodo;
+    return adjustedTodo.filter(todo =>
+      todo.event.toLocaleLowerCase().includes(searchField)
+    );
   };
 
   useEffect(() => {
@@ -298,7 +304,7 @@ const Content = () => {
                         }}
                         onBlur={() => {
                           if (updateTodoObject === null) return;
-
+                          setFocusedTextarea(null);
                           updateTodo(updateTodoObject);
                         }}
                       ></textarea>
