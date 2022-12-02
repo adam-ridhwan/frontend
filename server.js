@@ -19,6 +19,10 @@ mongoose.connect(
   }
 );
 
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));
 db.once('open', function () {
@@ -114,6 +118,7 @@ app.get('/todos', async (req, res) => {
   const [, token] = authorization.split(' ');
   const [email, password] = token.split(':');
   const user = await User.findOne({ email }).exec();
+
   if (!user || user.password !== password) {
     res.status(403);
     res.json({ message: 'invalid access' });
