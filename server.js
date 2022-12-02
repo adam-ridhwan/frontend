@@ -166,7 +166,6 @@ app.put('/delete', async (req, res) => {
   const [, token] = authorization.split(' ');
   const [email, password] = token.split(':');
   const user = await User.findOne({ email }).exec();
-  const todo = req.body;
 
   if (!user || user.password !== password) {
     res.status(403);

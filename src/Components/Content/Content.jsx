@@ -19,8 +19,7 @@ const Content = () => {
   const [hoveredOnDivTask, setHoveredOnDivTask] = useState(null);
   const [hoveredOnTextarea, setHoveredOnTextarea] = useState(null);
   const [focusedTextarea, setFocusedTextarea] = useState(null);
-  const [setTextAreaValue] = useState('');
-  const [updateTodoObject, setUpdateTodoObject] = useState(null);
+  const [setUpdateTodoObject] = useState(null);
   const [render, setRender] = useState(true);
 
   const divTasksRefsById = useMemo(() => {
