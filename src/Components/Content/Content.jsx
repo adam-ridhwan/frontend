@@ -115,10 +115,15 @@ const Content = () => {
   }, [sortValue, filter]);
 
   const getTodos = () => {
-    if (filter === ALLTASKS && sortValue === REMOVESORT)
+    // helper: filter by text function
+    const filterTodos = todos => {
       return todos.filter(todo =>
-        todo.event.toLocaleLowerCase().includes(searchField)
+        todo.event.toLowerCase().includes(searchField)
       );
+    };
+
+    if (filter === ALLTASKS && sortValue === REMOVESORT)
+      return filterTodos(todos);
 
     let adjustedTodo = [...todos];
 
@@ -142,9 +147,7 @@ const Content = () => {
         adjustedTodo = adjustedTodo.filter(todo => todo.finished === false);
     }
 
-    return adjustedTodo.filter(todo =>
-      todo.event.toLocaleLowerCase().includes(searchField)
-    );
+    return filterTodos(adjustedTodo);
   };
 
   // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
