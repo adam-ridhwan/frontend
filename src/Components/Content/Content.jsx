@@ -95,6 +95,16 @@ const Content = () => {
     setTodos(newTodos); // IMPORTANT
   };
 
+  const handleDeleteIfEmpty = todo => {
+    if (todo.event !== '') return;
+
+    const newtodos = todos.filter(oldTodo => {
+      return oldTodo.id !== todo.id;
+    });
+    setTodos(newtodos);
+    PostTodos(newtodos);
+  };
+
   useEffect(() => {
     const editTextrea = e => {
       if (focusedTextarea === null) return;
@@ -231,21 +241,16 @@ const Content = () => {
                           setHoveredOnDiv(null);
                           setFocusedTextarea(textareaRefs[todo.id].current);
                         }}
-                        onBlur={() => UpdateTodos(todo)}
+                        onBlur={() => {
+                          UpdateTodos(todo);
+                          handleDeleteIfEmpty(todo);
+                        }}
                         onKeyDown={e => {
                           if (e.key === 'Enter') {
                             e.preventDefault();
                             UpdateTodos(todo);
                           }
-                          if (e.key === 'Backspace') {
-                            if (todo.event === '') {
-                              const newtodos = todos.filter(oldTodo => {
-                                return oldTodo.id !== todo.id;
-                              });
-                              setTodos(newtodos);
-                              PostTodos(newtodos);
-                            }
-                          }
+                          if (e.key === 'Backspace') handleDeleteIfEmpty(todo);
                         }}
                       ></textarea>
                     </label>
@@ -255,7 +260,7 @@ const Content = () => {
             );
           })}
           <div className='add-task-input-container'>
-            <span className=''>{addIcon}</span>
+            <span>{addIcon}</span>
             <form onSubmit={e => AddNewTodo(e, todoText)}>
               <input
                 ref={addTaskInputRef}
