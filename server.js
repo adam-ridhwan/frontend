@@ -166,11 +166,12 @@ app.put('/reset', async (req, res) => {
   res.json(resetTodos);
 });
 
-app.put('/delete', async (req, res) => {
+app.delete('/todo', async (req, res) => {
   const { authorization } = req.headers;
   const [, token] = authorization.split(' ');
   const [email, password] = token.split(':');
   const user = await User.findOne({ email }).exec();
+  const todo = req.body;
 
   if (!user || user.password !== password) {
     res.status(403);
@@ -178,5 +179,10 @@ app.put('/delete', async (req, res) => {
     return;
   }
 
-  res.json();
+  const deleteTodo = await Todos.deleteOne({
+    userId: user._id,
+    'todos.id': todo.id,
+  });
+
+  res.json(deleteTodo);
 });

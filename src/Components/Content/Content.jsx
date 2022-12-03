@@ -19,24 +19,23 @@ const Content = () => {
 
   const [todoText, setTodoText] = useState('');
   const [hoveredOnDiv, setHoveredOnDiv] = useState(null);
-  const [hoveredOnTextarea, setHoveredOnTextarea] = useState(null);
+  const [hvrdTextarea, setHvrdTextarea] = useState(null);
   const [focusedTextarea, setFocusedTextarea] = useState(null);
-  const [setUpdateTodoObject] = useState(null);
   const [render, setRender] = useState(true);
 
-  const divTasksRefsById = useMemo(() => {
+  const divRefs = useMemo(() => {
     const refs = {};
     todos.forEach(todo => (refs[todo.id] = createRef(null)));
     return refs;
   }, [todos]);
 
-  const textareaRefsById = useMemo(() => {
+  const textareaRefs = useMemo(() => {
     const refs = {};
     todos.forEach(todo => (refs[todo.id] = createRef(null)));
     return refs;
   }, [todos]);
 
-  const greenBackgroundRefsById = useMemo(() => {
+  const greenbckgrdRefs = useMemo(() => {
     const refs = {};
     todos.forEach(todo => (refs[todo.id] = createRef(null)));
     return refs;
@@ -74,16 +73,18 @@ const Content = () => {
     PostTodos(newTodos);
   };
 
+  // delete className greenBackground
   const deleteClassNameMemoized = useCallback(() => {
-    for (const [, value] of Object.entries(greenBackgroundRefsById))
+    for (const [, value] of Object.entries(greenbckgrdRefs))
       if (value.current !== null) value.current.classList.remove(CLASSNAME);
-  }, [greenBackgroundRefsById]);
+  }, [greenbckgrdRefs]);
 
   useEffect(() => {
     deleteClassNameMemoized();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortValue, filter]);
 
+  // update todo text
   const onChangeTextarea = (e, selectedTodoToChange) => {
     let newTodos = [...todos];
     const selectedTodo = Object.values(newTodos).find(
@@ -168,27 +169,26 @@ const Content = () => {
           {getTodos().map(todo => {
             return (
               <div
-                ref={divTasksRefsById[todo.id]}
+                ref={divRefs[todo.id]}
                 key={todo.id}
                 className='outer-div-container'
                 style={{
                   background:
-                    hoveredOnDiv === divTasksRefsById[todo.id] &&
-                    'rgb(244, 244, 244)',
+                    hoveredOnDiv === divRefs[todo.id] && 'rgb(244, 244, 244)',
                   outline:
-                    hoveredOnDiv === divTasksRefsById[todo.id] &&
+                    hoveredOnDiv === divRefs[todo.id] &&
                     '1px solid rgb(171,171,171)',
                   position: 'relative',
                 }}
-                onMouseEnter={() => setHoveredOnDiv(divTasksRefsById[todo.id])}
+                onMouseEnter={() => setHoveredOnDiv(divRefs[todo.id])}
                 onMouseLeave={() => setHoveredOnDiv(null)}
               >
-                <div ref={greenBackgroundRefsById[todo.id]}></div>
+                <div ref={greenbckgrdRefs[todo.id]}></div>
                 <div className='tasks-container'>
                   <span
                     className='checkbox-icon'
                     onClick={() =>
-                      toggleCheckedTodo(greenBackgroundRefsById[todo.id], todo)
+                      toggleCheckedTodo(greenbckgrdRefs[todo.id], todo)
                     }
                   >
                     {todo.finished ? checkedBox : uncheckedBox}
@@ -203,7 +203,7 @@ const Content = () => {
                     <label>
                       <div className='div-tasks'>{todo.event}</div>
                       <textarea
-                        ref={textareaRefsById[todo.id]}
+                        ref={textareaRefs[todo.id]}
                         defaultValue={todo.event}
                         rows='1'
                         tabIndex='-1'
@@ -215,28 +215,36 @@ const Content = () => {
                           border: 'none',
                           borderRadius: '1pt',
                           boxShadow:
-                            hoveredOnDiv === divTasksRefsById[todo.id] &&
+                            hoveredOnDiv === divRefs[todo.id] &&
                             `0 0 0 1pt ${
-                              hoveredOnTextarea === textareaRefsById[todo.id]
+                              hvrdTextarea === textareaRefs[todo.id]
                                 ? 'rgb(110,110,110)'
                                 : 'darkgray'
                             } `,
                         }}
                         onMouseEnter={() =>
-                          setHoveredOnTextarea(textareaRefsById[todo.id])
+                          setHvrdTextarea(textareaRefs[todo.id])
                         }
-                        onMouseLeave={() => setHoveredOnTextarea(null)}
-                        onChange={$event => onChangeTextarea($event, todo)}
-                        onFocus={e => {
+                        onMouseLeave={() => setHvrdTextarea(null)}
+                        onChange={$e => onChangeTextarea($e, todo)}
+                        onFocus={() => {
                           setHoveredOnDiv(null);
-                          setFocusedTextarea(textareaRefsById[todo.id].current);
-                          setUpdateTodoObject(todo);
+                          setFocusedTextarea(textareaRefs[todo.id].current);
                         }}
                         onBlur={() => UpdateTodos(todo)}
-                        onKeyPress={e => {
+                        onKeyDown={e => {
                           if (e.key === 'Enter') {
                             e.preventDefault();
                             UpdateTodos(todo);
+                          }
+                          if (e.key === 'Backspace') {
+                            if (todo.event === '') {
+                              const newtodos = todos.filter(oldTodo => {
+                                return oldTodo.id !== todo.id;
+                              });
+                              setTodos(newtodos);
+                              PostTodos(newtodos);
+                            }
                           }
                         }}
                       ></textarea>
